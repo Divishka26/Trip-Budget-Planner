@@ -1,0 +1,501 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f0f0f;--surface:#161616;--surface2:#1e1e1e;--surface3:#252525;
+    --accent:#f0c040;--accent2:#4fc3f7;--accent3:#81c784;--accent4:#ef9a9a;
+    --text:#e8e8e8;--text2:#a0a0a0;--text3:#606060;
+    --border:#2a2a2a;--border2:#333;
+    --font-head:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  }
+  body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;min-height:100vh}
+  .app{max-width:960px;margin:0 auto;padding:1.5rem 1rem}
+
+  /* Header */
+  .header{margin-bottom:2rem;border-bottom:1px solid var(--border2);padding-bottom:1.2rem}
+  .header h1{font-family:var(--font-head);font-size:26px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+  .header p{color:var(--text2);font-size:11px;margin-top:4px}
+  .algo-badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:3px;font-size:10px;font-weight:500;font-family:var(--font-head);letter-spacing:0.5px}
+  .badge-y{background:#2a2000;color:var(--accent);border:1px solid #4a3800}
+  .badge-b{background:#001a2a;color:var(--accent2);border:1px solid #003a5a}
+  .badge-g{background:#001a00;color:var(--accent3);border:1px solid #003a00}
+
+  /* Two-col layout */
+  .main-grid{display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start}
+  @media(max-width:700px){.main-grid{grid-template-columns:1fr}}
+
+  /* Panel */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .panel-hdr{background:var(--surface2);padding:10px 14px;font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+  .panel-body{padding:14px}
+
+  /* Form */
+  .form-row{margin-bottom:10px}
+  .form-row label{display:block;font-size:10px;color:var(--text2);margin-bottom:4px;letter-spacing:0.5px}
+  .form-row input{width:100%;background:var(--surface3);border:1px solid var(--border2);color:var(--text);padding:7px 10px;border-radius:4px;font-family:var(--font-mono);font-size:12px;outline:none}
+  .form-row input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(240,192,64,0.12)}
+  .budget-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:14px}
+  .budget-row .form-row{flex:1;margin-bottom:0}
+  .btn{padding:7px 16px;border:none;border-radius:4px;font-family:var(--font-head);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:all 0.15s}
+  .btn-accent{background:var(--accent);color:#000}
+  .btn-accent:hover{background:#ffd060}
+  .btn-sm{padding:5px 10px;font-size:10px}
+  .btn-red{background:#2a0000;color:var(--accent4);border:1px solid #4a0000}
+  .btn-red:hover{background:#3a0000}
+  .btn-gray{background:var(--surface3);color:var(--text2);border:1px solid var(--border2)}
+  .btn-gray:hover{background:var(--border2)}
+  .add-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;align-items:end}
+  .add-row .form-row{margin-bottom:0}
+
+  /* Item list */
+  .item-list{margin-top:12px;max-height:220px;overflow-y:auto}
+  .item-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:4px;border:1px solid var(--border);margin-bottom:5px;background:var(--surface2)}
+  .item-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+  .item-name{flex:1;font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-meta{display:flex;gap:8px;font-size:10px;color:var(--text2)}
+  .item-chip{padding:1px 6px;border-radius:2px;font-size:10px}
+  .chip-cost{background:#1a1000;color:#e0a020;border:1px solid #2a2000}
+  .chip-val{background:#001a10;color:#40c080;border:1px solid #002a18}
+
+  /* Results */
+  .results-area{display:flex;flex-direction:column;gap:1rem}
+  .algo-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .algo-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
+  .algo-title{font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:0.5px}
+  .algo-score{font-size:20px;font-weight:800;font-family:var(--font-head)}
+  .score-row{display:flex;gap:16px;align-items:baseline;padding:10px 14px 6px}
+  .score-lbl{font-size:10px;color:var(--text2);display:block;margin-bottom:2px}
+  .score-val{font-size:16px;font-weight:700;font-family:var(--font-head)}
+  .selected-items{padding:0 14px 12px;display:flex;flex-wrap:wrap;gap:5px}
+  .sel-chip{padding:4px 10px;border-radius:3px;font-size:10px;font-family:var(--font-head);display:flex;align-items:center;gap:5px}
+  .frac-bar{height:3px;border-radius:1px;margin-top:2px}
+  .progress-bar-outer{background:var(--surface3);border-radius:3px;height:6px;margin:0 14px 10px;overflow:hidden}
+  .progress-bar-inner{height:100%;border-radius:3px;transition:width 0.5s}
+
+  /* Comparison chart */
+  .compare-panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .chart-wrap{padding:14px}
+
+  /* DP table */
+  .dp-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:1rem}
+  .dp-scroll{overflow-x:auto;padding:14px}
+  .dp-table{border-collapse:collapse;font-size:10px}
+  .dp-table td,.dp-table th{width:32px;height:24px;text-align:center;border:1px solid var(--border3,#222);padding:2px}
+  .dp-table th{background:var(--surface3);color:var(--text2);font-weight:500}
+  .dp-table .dp-hl{background:#1a1000;color:var(--accent)}
+  .dp-table .dp-sel{background:#001a00;color:var(--accent3)}
+
+  /* Stats */
+  .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+  .stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:10px;text-align:center}
+  .stat-num{font-size:20px;font-weight:800;font-family:var(--font-head);color:var(--accent)}
+  .stat-lbl{font-size:10px;color:var(--text2);margin-top:2px}
+
+  /* Empty state */
+  .empty{text-align:center;padding:2rem;color:var(--text3);font-size:11px}
+
+  /* Algo compare table */
+  .cmp-table{width:100%;border-collapse:collapse;font-size:11px}
+  .cmp-table th{background:var(--surface3);color:var(--text2);padding:6px 10px;text-align:left;font-weight:500;font-size:10px;letter-spacing:0.5px;text-transform:uppercase}
+  .cmp-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
+  .cmp-table tr:last-child td{border-bottom:none}
+  .win{color:var(--accent3);font-weight:700}
+
+  .divider{height:1px;background:var(--border);margin:1rem 0}
+  .run-btn-wrap{margin-top:14px}
+  .tag-01{color:var(--accent2)}
+  .tag-frac{color:var(--accent3)}
+  .tag-bb{color:var(--accent)}
+</style>
+
+<div class="app">
+  <div class="header">
+    <h1>Trip & Budget Planner</h1>
+    <p>Knapsack-based optimization engine &mdash; C++ algorithms (0/1 DP · Branch &amp; Bound · Fractional Greedy)</p>
+    <div class="algo-badges">
+      <span class="badge badge-b">0/1 Knapsack (DP)</span>
+      <span class="badge badge-y">Branch &amp; Bound</span>
+      <span class="badge badge-g">Fractional Greedy</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- Left: Input -->
+    <div>
+      <div class="panel">
+        <div class="panel-hdr">Budget Constraint</div>
+        <div class="panel-body">
+          <div class="budget-row">
+            <div class="form-row">
+              <label>TOTAL BUDGET (₹ / $)</label>
+              <input type="number" id="budget" value="10000" min="1" placeholder="e.g. 10000"/>
+            </div>
+          </div>
+          <div class="panel-hdr" style="margin:-14px -14px 10px;border-radius:0">Add Trip Item</div>
+          <div class="add-row">
+            <div class="form-row"><label>ITEM NAME</label><input type="text" id="iname" placeholder="Paris flight"/></div>
+            <div class="form-row"><label>COST</label><input type="number" id="icost" placeholder="3500" min="1"/></div>
+            <div class="form-row"><label>VALUE</label><input type="number" id="ival" placeholder="90" min="1"/></div>
+            <button class="btn btn-accent btn-sm" style="height:32px;margin-top:auto" onclick="addItem()">+</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-gray btn-sm" onclick="loadPreset()">Load Preset Trips</button>
+            <button class="btn btn-red btn-sm" onclick="clearItems()">Clear All</button>
+          </div>
+          <div class="item-list" id="item-list"><div class="empty">No items added yet</div></div>
+        </div>
+      </div>
+      <div class="run-btn-wrap">
+        <button class="btn btn-accent" style="width:100%;padding:11px;font-size:13px" onclick="runAlgorithms()">Run Knapsack Algorithms</button>
+      </div>
+    </div>
+
+    <!-- Right: Results -->
+    <div id="results-col">
+      <div class="empty" style="margin-top:3rem;font-size:12px">
+        Add items and click "Run Knapsack Algorithms" to see results
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ============================================================
+//  C++ ALGORITHM PORTS (identical logic, JS implementation)
+// ============================================================
+
+// --- 0/1 Knapsack via Dynamic Programming ---
+// T: O(n*W), S: O(n*W)  —  mirrors C++ 2D DP table
+function knapsack01DP(items, W) {
+  const n = items.length;
+  const dp = Array.from({length: n+1}, () => new Array(W+1).fill(0));
+  for (let i = 1; i <= n; i++) {
+    const {cost, value} = items[i-1];
+    for (let w = 0; w <= W; w++) {
+      dp[i][w] = dp[i-1][w];
+      if (cost <= w) dp[i][w] = Math.max(dp[i][w], dp[i-1][w-cost] + value);
+    }
+  }
+  // Traceback
+  let w = W, selected = [];
+  for (let i = n; i >= 1; i--) {
+    if (dp[i][w] !== dp[i-1][w]) { selected.push(i-1); w -= items[i-1].cost; }
+  }
+  return { maxValue: dp[n][W], selected: selected.reverse(), dp, totalCost: selected.reduce((s,i)=>s+items[i].cost,0) };
+}
+
+// --- Branch & Bound upper bound (fractional relaxation) ---
+function upperBound(items, idx, curW, curVal, W) {
+  let ub = curVal, rem = W - curW;
+  for (let i = idx; i < items.length; i++) {
+    if (items[i].cost <= rem) { rem -= items[i].cost; ub += items[i].value; }
+    else { ub += (items[i].value / items[i].cost) * rem; break; }
+  }
+  return ub;
+}
+
+// --- 0/1 Knapsack via Branch & Bound ---
+// Mirrors recursive C++ B&B with pruning
+function knapsackBB(items, W) {
+  const sorted = [...items].map((it,i)=>({...it,origIdx:i})).sort((a,b)=>(b.value/b.cost)-(a.value/a.cost));
+  let bestVal = 0, bestSet = [], nodes = 0;
+  function dfs(idx, curW, curVal, chosen) {
+    nodes++;
+    if (nodes > 100000) return;
+    if (curVal > bestVal) { bestVal = curVal; bestSet = [...chosen]; }
+    if (idx >= sorted.length) return;
+    const ub = upperBound(sorted, idx, curW, curVal, W);
+    if (ub <= bestVal) return;
+    const it = sorted[idx];
+    if (curW + it.cost <= W) dfs(idx+1, curW+it.cost, curVal+it.value, [...chosen, it.origIdx]);
+    dfs(idx+1, curW, curVal, chosen);
+  }
+  dfs(0, 0, 0, []);
+  return { maxValue: bestVal, selected: bestSet.sort((a,b)=>a-b), nodesExplored: nodes, totalCost: bestSet.reduce((s,i)=>s+items[i].cost,0) };
+}
+
+// --- Fractional Knapsack (Greedy) ---
+// Items can be split — greedy by value/cost ratio
+function knapsackFractional(items, W) {
+  const sorted = items.map((it,i)=>({...it,origIdx:i,ratio:it.value/it.cost})).sort((a,b)=>b.ratio-a.ratio);
+  let rem = W, totalVal = 0, selected = [], fractions = {};
+  for (const it of sorted) {
+    if (rem <= 0) break;
+    if (it.cost <= rem) {
+      selected.push(it.origIdx);
+      fractions[it.origIdx] = 1.0;
+      totalVal += it.value;
+      rem -= it.cost;
+    } else {
+      const frac = rem / it.cost;
+      fractions[it.origIdx] = frac;
+      totalVal += it.value * frac;
+      selected.push(it.origIdx);
+      rem = 0;
+    }
+  }
+  return { maxValue: totalVal, selected, fractions, totalCost: W - rem };
+}
+
+// ============================================================
+//  APP STATE
+// ============================================================
+let items = [];
+let chartInst = null;
+const COLORS = ['#f0c040','#4fc3f7','#81c784','#ef9a9a','#ce93d8','#ffb74d','#4dd0e1','#aed581','#f48fb1','#80cbc4'];
+
+function addItem() {
+  const name = document.getElementById('iname').value.trim();
+  const cost = parseInt(document.getElementById('icost').value);
+  const value = parseInt(document.getElementById('ival').value);
+  if (!name || !cost || !value || cost < 1 || value < 1) { alert('Please enter valid name, cost and value.'); return; }
+  items.push({ name, cost, value, color: COLORS[items.length % COLORS.length] });
+  document.getElementById('iname').value = '';
+  document.getElementById('icost').value = '';
+  document.getElementById('ival').value = '';
+  renderItemList();
+}
+
+function removeItem(idx) { items.splice(idx, 1); renderItemList(); }
+function clearItems() { items = []; renderItemList(); document.getElementById('results-col').innerHTML = '<div class="empty" style="margin-top:3rem;font-size:12px">Add items and run algorithms</div>'; }
+
+function loadPreset() {
+  items = [
+    {name:'Paris Flight', cost:3500, value:95, color:COLORS[0]},
+    {name:'Hotel (5 nights)', cost:2800, value:88, color:COLORS[1]},
+    {name:'Eiffel Tower Tour', cost:400, value:75, color:COLORS[2]},
+    {name:'Louvre Museum', cost:250, value:70, color:COLORS[3]},
+    {name:'Seine River Cruise', cost:180, value:60, color:COLORS[4]},
+    {name:'Day Trip: Versailles', cost:350, value:80, color:COLORS[5]},
+    {name:'Food & Dining (total)', cost:1200, value:85, color:COLORS[6]},
+    {name:'Shopping Budget', cost:800, value:50, color:COLORS[7]},
+    {name:'Museum Pass 3-Day', cost:320, value:78, color:COLORS[8]},
+    {name:'Airport Transfer', cost:120, value:40, color:COLORS[9]},
+  ];
+  document.getElementById('budget').value = 8000;
+  renderItemList();
+}
+
+function renderItemList() {
+  const el = document.getElementById('item-list');
+  if (!items.length) { el.innerHTML = '<div class="empty">No items added yet</div>'; return; }
+  el.innerHTML = items.map((it,i) => `
+    <div class="item-row">
+      <span class="item-dot" style="background:${it.color}"></span>
+      <span class="item-name">${it.name}</span>
+      <span class="item-meta">
+        <span class="item-chip chip-cost">₹${it.cost.toLocaleString()}</span>
+        <span class="item-chip chip-val">val:${it.value}</span>
+      </span>
+      <button class="btn btn-red btn-sm" style="padding:2px 7px;font-size:9px" onclick="removeItem(${i})">✕</button>
+    </div>`).join('');
+}
+
+function runAlgorithms() {
+  const W = parseInt(document.getElementById('budget').value);
+  if (!items.length) { alert('Please add at least one item.'); return; }
+  if (!W || W < 1) { alert('Please set a valid budget.'); return; }
+
+  const t0 = performance.now();
+  const dp = knapsack01DP(items, W);
+  const t1 = performance.now();
+  const bb = knapsackBB(items, W);
+  const t2 = performance.now();
+  const frac = knapsackFractional(items, W);
+  const t3 = performance.now();
+
+  renderResults(dp, bb, frac, W, t1-t0, t2-t1, t3-t2);
+}
+
+function renderResults(dp, bb, frac, W, tDP, tBB, tFrac) {
+  const col = document.getElementById('results-col');
+
+  const bestExact = Math.max(dp.maxValue, bb.maxValue);
+  const allItems = items;
+
+  const dpItems = dp.selected.map(i => allItems[i]);
+  const bbItems = bb.selected.map(i => allItems[i]);
+  const fracItems = frac.selected.map(i => allItems[i]);
+
+  function selChips(sel, fracMap) {
+    return sel.map(i => {
+      const it = allItems[i];
+      const f = fracMap ? fracMap[i] : 1.0;
+      const pct = Math.round(f * 100);
+      return `<span class="sel-chip" style="background:${it.color}22;border:1px solid ${it.color}55;color:${it.color}">
+        ${it.name}${pct < 100 ? ` <span style="opacity:0.7">${pct}%</span>` : ''}
+      </span>`;
+    }).join('');
+  }
+
+  function algoCard(title, res, fracMap, colorAccent, timems, extra) {
+    const pct = Math.round((res.totalCost / W) * 100);
+    return `<div class="algo-card">
+      <div class="algo-hdr">
+        <span class="algo-title" style="color:${colorAccent}">${title}</span>
+        <span class="algo-score" style="color:${colorAccent}">${Math.round(res.maxValue)} <span style="font-size:11px;color:var(--text2)">pts</span></span>
+      </div>
+      <div class="score-row">
+        <div><span class="score-lbl">Total Cost</span><span class="score-val" style="color:${colorAccent}">₹${Math.round(res.totalCost).toLocaleString()}</span></div>
+        <div><span class="score-lbl">Budget Used</span><span class="score-val">${pct}%</span></div>
+        <div><span class="score-lbl">Items Selected</span><span class="score-val">${res.selected.length} / ${allItems.length}</span></div>
+        <div><span class="score-lbl">Time</span><span class="score-val" style="font-size:12px">${timems.toFixed(2)}ms</span></div>
+      </div>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" style="width:${pct}%;background:${colorAccent}"></div>
+      </div>
+      <div class="selected-items">${selChips(res.selected, fracMap)}</div>
+      ${extra || ''}
+    </div>`;
+  }
+
+  // DP table (compact — only show if ≤ 8 items and W ≤ 50 for readability)
+  let dpTableHTML = '';
+  if (allItems.length <= 8 && W <= 200) {
+    const step = Math.max(1, Math.floor(W / 40));
+    const cols = [];
+    for (let w = 0; w <= W; w += step) cols.push(w);
+    if (cols[cols.length-1] !== W) cols.push(W);
+
+    const { dp: dpArr, selected: dpSel } = dp;
+    const selSet = new Set(dpSel.map(x => x+1));
+
+    let tbl = `<table class="dp-table"><tr><th>item\\w</th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+    for (let i = 0; i <= allItems.length; i++) {
+      const name = i === 0 ? '∅' : allItems[i-1].name.slice(0,8);
+      tbl += `<tr><th style="text-align:left;padding-left:6px;font-size:9px">${name}</th>`;
+      for (const c of cols) {
+        const val = dpArr[i][c];
+        const isHl = i > 0 && val !== dpArr[i-1][c];
+        const isSel = selSet.has(i);
+        tbl += `<td class="${isHl ? (isSel ? 'dp-sel' : 'dp-hl') : ''}">${val}</td>`;
+      }
+      tbl += '</tr>';
+    }
+    tbl += '</table>';
+    dpTableHTML = `<div class="dp-section"><div class="panel-hdr">DP Table Visualization <span style="color:var(--text3);font-weight:400">(sampled columns)</span></div><div class="dp-scroll">${tbl}</div></div>`;
+  }
+
+  col.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-num">${allItems.length}</div><div class="stat-lbl">Items</div></div>
+      <div class="stat-box"><div class="stat-num">₹${W.toLocaleString()}</div><div class="stat-lbl">Budget</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--accent3)">${Math.round(bestExact)}</div><div class="stat-lbl">Optimal Value</div></div>
+    </div>
+
+    <div class="results-area">
+      ${algoCard('<span class="tag-01">0/1 Knapsack</span> — Dynamic Programming', dp, null, '#4fc3f7', tDP)}
+      ${algoCard('<span class="tag-bb">0/1 Knapsack</span> — Branch &amp; Bound', bb, null, '#f0c040', tBB,
+        `<div style="padding:0 14px 10px;font-size:10px;color:var(--text2)">Nodes explored: <b style="color:var(--accent)">${bb.nodesExplored.toLocaleString()}</b></div>`)}
+      ${algoCard('<span class="tag-frac">Fractional Knapsack</span> — Greedy (value/cost ratio)', frac, frac.fractions, '#81c784', tFrac)}
+
+      <div class="compare-panel">
+        <div class="panel-hdr">Algorithm Comparison</div>
+        <div class="chart-wrap">
+          <table class="cmp-table">
+            <tr><th>Algorithm</th><th>Max Value</th><th>Cost Used</th><th>Items</th><th>Splits?</th><th>Exact?</th></tr>
+            <tr>
+              <td style="color:#4fc3f7">0/1 DP</td>
+              <td class="${dp.maxValue >= frac.maxValue ? 'win' : ''}">${Math.round(dp.maxValue)}</td>
+              <td>₹${dp.totalCost.toLocaleString()}</td>
+              <td>${dp.selected.length}</td>
+              <td>No</td>
+              <td style="color:var(--accent3)">Yes (optimal)</td>
+            </tr>
+            <tr>
+              <td style="color:#f0c040">Branch &amp; Bound</td>
+              <td class="${bb.maxValue >= frac.maxValue ? 'win' : ''}">${Math.round(bb.maxValue)}</td>
+              <td>₹${bb.totalCost.toLocaleString()}</td>
+              <td>${bb.selected.length}</td>
+              <td>No</td>
+              <td style="color:var(--accent3)">Yes (optimal)</td>
+            </tr>
+            <tr>
+              <td style="color:#81c784">Fractional Greedy</td>
+              <td class="${frac.maxValue > dp.maxValue ? 'win' : ''}">${Math.round(frac.maxValue)}</td>
+              <td>₹${Math.round(frac.totalCost).toLocaleString()}</td>
+              <td>${frac.selected.length}</td>
+              <td style="color:var(--accent)">Yes</td>
+              <td style="color:#ef9a9a">Greedy upper-bound</td>
+            </tr>
+          </table>
+          <div style="margin-top:14px;position:relative;height:180px">
+            <canvas id="cmpChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      ${dpTableHTML}
+
+      <div class="panel" style="margin-top:0">
+        <div class="panel-hdr">Item Value-to-Cost Ratio Analysis</div>
+        <div class="panel-body" style="padding:10px">
+          <div style="position:relative;height:160px"><canvas id="ratioChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Chart 1: Bar comparison
+  if (chartInst) { chartInst.destroy(); }
+  setTimeout(() => {
+    const ctx1 = document.getElementById('cmpChart');
+    if (!ctx1) return;
+    chartInst = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['0/1 DP','Branch & Bound','Fractional Greedy'],
+        datasets: [{
+          label: 'Max Value',
+          data: [Math.round(dp.maxValue), Math.round(bb.maxValue), Math.round(frac.maxValue)],
+          backgroundColor: ['#4fc3f733','#f0c04033','#81c78433'],
+          borderColor: ['#4fc3f7','#f0c040','#81c784'],
+          borderWidth: 1.5,
+        },{
+          label: 'Cost Used',
+          data: [dp.totalCost, bb.totalCost, Math.round(frac.totalCost)],
+          backgroundColor: ['#4fc3f711','#f0c04011','#81c78411'],
+          borderColor: ['#4fc3f766','#f0c04066','#81c78466'],
+          borderWidth: 1,
+          borderDash: [4,3],
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#606060', font: { size: 10 } }, grid: { color: '#1e1e1e' } },
+          y: { ticks: { color: '#606060', font: { size: 10 } }, grid: { color: '#1e1e1e' } }
+        }
+      }
+    });
+
+    const ctx2 = document.getElementById('ratioChart');
+    if (!ctx2) return;
+    const ratios = allItems.map(it => parseFloat((it.value / it.cost * 100).toFixed(2)));
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: allItems.map(it => it.name.length > 10 ? it.name.slice(0,10)+'..' : it.name),
+        datasets: [{
+          label: 'Value/Cost ×100',
+          data: ratios,
+          backgroundColor: allItems.map(it => it.color + '44'),
+          borderColor: allItems.map(it => it.color),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#606060', font: { size: 9 }, maxRotation: 35, autoSkip: false }, grid: { color: '#1a1a1a' } },
+          y: { ticks: { color: '#606060', font: { size: 9 } }, grid: { color: '#1a1a1a' } }
+        }
+      }
+    });
+  }, 100);
+}
+</script>
